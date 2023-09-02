@@ -1,27 +1,27 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
-	"log"
 	"net/http"
+	"github.com/1shubham7/understanding-web-servers/handlers"
+	"log"
+	"os"
+	// "io"
 )
 
 func main() {
 
+	l := log.New(os.Stdout, "product-api", log.LstdFlags)
+	homehandler := handlers.NewHome(l) //you can just say it hh
 
-	http.HandleFunc("/", func(rw http.ResponseWriter, r*http.Request) {
-		log.Println("I love GeeksforGeeks")
+	servemux := http.NewServeMux() //you can also call this sm
+	servemux.Handle("/", homehandler)
 
-		d, err := ioutil.ReadAll(r.Body)
+	http.ListenAndServe(":6000", servemux)
+	// second parameter is for http handler. if we say "nil" in second parameter, 
+	// the server will take the default http handler, here we specified the http handler
 
-		if err!= nil{
-			http.Error(rw, "Sorry, Try again later", http.StatusBadRequest)
-			return
-		}
-		log.Printf("Data : %s\n", d)
-		fmt.Fprintf(rw, "\nHello There %s", d)
-	})
-	http.ListenAndServe(":6000", nil)
+
+
+	
 }
 
